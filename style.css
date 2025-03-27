@@ -11,15 +11,17 @@
     display: grid;
     justify-content: center;
     display: grid;
-    grid-template-columns: repeat(3,50ch);
-    grid-template-rows: repeat(3,40ch);
+    grid-template-columns: repeat(3,15ch);
+    grid-template-rows: repeat(3,15ch);
     div 
     {
         
         background-color: cyan;
+        border: 2px dotted black;
     
     }
 }
+
 .header
 {
     text-align: center;
