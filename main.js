@@ -67,7 +67,7 @@ function Createplayer(name,mark){
             getname:()=>playername,
             getmark:()=>mark,
             getpoints:()=>points,
-            addpoints:()=>{ return points=points++;},
+            addpoints:()=>{ points++; return points},
             turn:turn,
             getPlayerBoard:()=>playerBoard,
             reset:()=>playerBoard=[],
