@@ -1,3 +1,4 @@
+// Player Factory
 function createPlayer(name, mark) {
     return {
         name: name,
@@ -13,7 +14,8 @@ function createPlayer(name, mark) {
     };
 }
 
-const gameboard = (function () {
+// Game Module
+const Game = (function () {
     let board = [];
     let isGameOver = false;
     let player1, player2;
@@ -33,6 +35,7 @@ const gameboard = (function () {
         player1Display.textContent = `Player 1: ${player1.name} (${player1.mark})`;
         player2Display.textContent = `Player 2: ${player2.name} (${player2.mark})`;
         updatePointsDisplay();
+        resetGame();
     }
 
     function checkWin() {
@@ -74,106 +77,140 @@ const gameboard = (function () {
         document.querySelectorAll(".tic_div").forEach(div => div.textContent = '');
     }
 
+    function getCurrentPlayer() {
+        return currentPlayer;
+    }
+
+    function setCurrentPlayer(player) {
+        currentPlayer = player;
+    }
+
+    function getBoard() {
+        return board;
+    }
+
+    function getPlayer1() {
+        return player1;
+    }
+
+    function getPlayer2() {
+        return player2;
+    }
+
+    function isGameOverFunc() {
+        return isGameOver;
+    }
+
     return {
         startGame,
         checkWin,
         resetGame,
-        getCurrentPlayer: function () { return currentPlayer; },
-        setCurrentPlayer: function (player) { currentPlayer = player; },
-        getBoard: function () { return board; },
-        getPlayer1: function () { return player1; },
-        getPlayer2: function () { return player2; },
-        isGameOver: function () { return isGameOver; },
+        getCurrentPlayer,
+        setCurrentPlayer,
+        getBoard,
+        getPlayer1,
+        getPlayer2,
+        isGameOver: isGameOverFunc,
     };
 })();
 
-function showDialog(playerIndex) {
-    const dialogBox = document.querySelector("dialog");
-    const submitButton = document.querySelector(".submit");
-    const closeButton = document.querySelector(".close");
-    const nameInput = document.querySelector("#name");
+// Display Controller Module
+const DisplayController = (function () {
+    let player1Name = "";
+    let player2Name = "";
 
-    nameInput.value = "";
-    dialogBox.showModal(); 
+    function showDialog(playerIndex) {
+        const dialogBox = document.querySelector("dialog");
+        const submitButton = document.querySelector(".submit");
+        const closeButton = document.querySelector(".close");
+        const nameInput = document.querySelector("#name");
 
-    submitButton.onclick = function (event) {
-        event.preventDefault();
-        if (nameInput.value !== "") {
-            if (playerIndex === 1) {
-                player1Name = nameInput.value;
+        nameInput.value = "";
+        dialogBox.showModal();
+
+        submitButton.onclick = function (event) {
+            event.preventDefault();
+            if (nameInput.value !== "") {
+                if (playerIndex === 1) {
+                    player1Name = nameInput.value;
+                } else {
+                    player2Name = nameInput.value;
+                }
+                dialogBox.close();
             } else {
-                player2Name = nameInput.value; 
+                alert("Name can't be empty!");
             }
-            dialogBox.close(); 
-        } else {
-            alert("Name can't be empty!");
-        }
-    };
+        };
 
-    closeButton.onclick = function () {
-        dialogBox.close();
-    };
-}
-let player1Name = "";
-let player2Name = "";
+        closeButton.onclick = function () {
+            dialogBox.close();
+        };
+    }
 
-function startGame() {
-    const p1Button = document.querySelector("#player1");
-    const p2Button = document.querySelector("#player2");
+    function setupGameboard() {
+        const cells = document.querySelectorAll(".tic_div");
 
-    p1Button.addEventListener("click", function () {
-        showDialog(1); 
-    });
+        cells.forEach(function (cell) {
+            cell.addEventListener("click", function () {
+                if (Game.isGameOver()) return;
 
-    p2Button.addEventListener("click", function () {
-        showDialog(2);
-    });
+                const index = parseInt(cell.getAttribute("data-index"));
+                const currentPlayer = Game.getCurrentPlayer();
 
-    const startButton = document.createElement("button");
-    startButton.textContent = "Start Game 🎮";
-    startButton.classList.add("start-game");
-    document.querySelector(".header").appendChild(startButton);
+                if (!Game.getBoard().includes(index)) {
+                    Game.getBoard().push(index);
+                    currentPlayer.board.push(index);
+                    cell.textContent = currentPlayer.mark;
+                    Game.checkWin();
 
-    startButton.addEventListener("click", function () {
-        if (player1Name && player2Name) {
-            gameboard.startGame(player1Name, player2Name);
-            startButton.disabled = true;
-            setupGameboard();
-        } else {
-            alert("Please enter both player names! ⚠️");
-        }
-    });
-}
+                    Game.setCurrentPlayer(
+                        currentPlayer === Game.getPlayer1() ? Game.getPlayer2() : Game.getPlayer1()
+                    );
+                } else {
+                    alert("This cell is already taken! 🚫");
+                }
+            });
+        });
 
-function setupGameboard() {
-    const cells = document.querySelectorAll(".tic_div");
+        const resetButton = document.querySelector(".reset");
+        resetButton.addEventListener("click", Game.resetGame);
+    }
 
-    cells.forEach(function (cell) {
-        cell.addEventListener("click", function () {
-            if (gameboard.isGameOver()) return;
+    function startGame() {
+        const p1Button = document.querySelector("#player1");
+        const p2Button = document.querySelector("#player2");
 
-            const index = parseInt(cell.getAttribute("data-index"));
-            const currentPlayer = gameboard.getCurrentPlayer();
+        p1Button.addEventListener("click", function () {
+            showDialog(1);
+        });
 
-            if (!gameboard.getBoard().includes(index)) {
-                gameboard.getBoard().push(index);
-                currentPlayer.board.push(index);
-                cell.textContent = currentPlayer.mark;
-                gameboard.checkWin();
+        p2Button.addEventListener("click", function () {
+            showDialog(2);
+        });
 
-                gameboard.setCurrentPlayer(
-                    currentPlayer === gameboard.getPlayer1() ? gameboard.getPlayer2() : gameboard.getPlayer1()
-                );
+        const startButton = document.createElement("button");
+        startButton.textContent = "Start Game 🎮";
+        startButton.classList.add("start-game");
+        document.querySelector(".header").appendChild(startButton);
+
+        startButton.addEventListener("click", function () {
+            if (player1Name && player2Name) {
+                Game.startGame(player1Name, player2Name);
+                startButton.disabled = true;
+                setupGameboard();
             } else {
-                alert("This cell is already taken! 🚫");
+                alert("Please enter both player names! ⚠️");
             }
         });
-    });
+    }
 
-    const resetButton = document.querySelector(".reset");
-    resetButton.addEventListener("click", gameboard.resetGame);
-}
+    return {
+        startGame,
+        setupGameboard,
+    };
+})();
 
-startGame();
+// Initialize the game
+DisplayController.startGame();
 
 
