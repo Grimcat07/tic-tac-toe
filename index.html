@@ -9,22 +9,46 @@
 </head>
 <body>
     <div class="header">
-        <p><h2>Tic-Tac-Toe</h2></p>
+        <h2>Tic-Tac-Toe</h2>
         <button class="reset">Reset</button>
+
         <div class="player">
-            <p></p>
+            <button id="player1">Enter Player 1</button>
+            <button id="player2">Enter Player 2</button>
+        
+            <dialog id="playerDialog">
+                <p>Enter Player Details</p>
+                <form method="dialog">
+                    <label for="name">Enter Player Name: <input type="text" id="name" required></label>
+                    <button class="submit" type="submit">Add Player</button>
+                </form>
+                <button class="close">X</button>
+            </dialog>
+        
+            <div id="player1Display" class="playerNameDisplay"></div>
+            <div id="player2Display" class="playerNameDisplay"></div>
+        
+
+            <div id="player1Points"></div>
+            <div id="player2Points"></div>
+        </div>
+        
+
+        <div class="result">
+            <p id="result"></p>
         </div>
     </div>
+
     <div class="container">
-     <div class="tic_div" data-index="0"></div>
-     <div class="tic_div" data-index="1"></div>
-     <div class="tic_div" data-index="2"></div>
-     <div class="tic_div" data-index="3"></div>
-     <div class="tic_div" data-index="4"></div>
-     <div class="tic_div" data-index="5"></div>
-     <div class="tic_div" data-index="6"></div>
-     <div class="tic_div" data-index="7"></div>
-     <div class="tic_div" data-index="8"></div>
+        <div class="tic_div" data-index="0"></div>
+        <div class="tic_div" data-index="1"></div>
+        <div class="tic_div" data-index="2"></div>
+        <div class="tic_div" data-index="3"></div>
+        <div class="tic_div" data-index="4"></div>
+        <div class="tic_div" data-index="5"></div>
+        <div class="tic_div" data-index="6"></div>
+        <div class="tic_div" data-index="7"></div>
+        <div class="tic_div" data-index="8"></div>
     </div>
 </body>
 </html>
